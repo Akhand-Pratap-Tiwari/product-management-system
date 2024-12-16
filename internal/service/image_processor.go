@@ -1,5 +1,10 @@
 package service
 
+import (
+	"product-management-system/internal/models"
+	"product-management-system/pkg/logger"
+)
+
 type ImageProcessor struct {
 	s3Client *s3.S3
 	bucket   string
