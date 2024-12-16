@@ -39,7 +39,7 @@ type awsS3Client struct {
 }
 
 func LoadConfig() *Config {
-	viper.SetConfigName("config")
+	viper.SetConfigName("config_dummy")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("./config")
