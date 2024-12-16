@@ -15,8 +15,10 @@ type Config struct {
 		DBName   string
 	}
 	Redis struct {
-		Host string
-		Port int
+		Host     string
+		Port     int
+		User     string
+		Password string
 	}
 	RabbitMQ struct {
 		Host string
@@ -30,12 +32,6 @@ type Config struct {
 		S3Bucket string
 		Region   string
 	}
-}
-
-// Define awsS3Client struct
-type awsS3Client struct {
-	Region string
-	Bucket string
 }
 
 func LoadConfig() *Config {

@@ -29,7 +29,7 @@ func main() {
 	appLogger := logger.NewLogger()
 
 	// Database connection
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=require",
 		cfg.Database.Host, cfg.Database.Port,
 		cfg.Database.User, cfg.Database.Password,
 		cfg.Database.DBName)
@@ -45,7 +45,7 @@ func main() {
 	}
 
 	// Initialize Redis Cache
-	redisCache := cache.NewRedisCache(cfg.Redis.Host, cfg.Redis.Port)
+	redisCache := cache.NewRedisCache(cfg.Redis.Host, cfg.Redis.Port, cfg.Redis.User, cfg.Redis.Password)
 
 	// Initialize Repositories
 	productRepo := repository.NewProductRepository(db)

@@ -13,9 +13,11 @@ type RedisCache struct {
 	client *redis.Client
 }
 
-func NewRedisCache(host string, port int) *RedisCache {
+func NewRedisCache(host string, port int, user string, pass string) *RedisCache {
 	rdb := redis.NewClient(&redis.Options{
-		Addr: fmt.Sprintf("%s:%d", host, port),
+		Addr:     fmt.Sprintf("%s:%d", host, port),
+		Username: user,
+		Password: pass,
 	})
 
 	return &RedisCache{client: rdb}
