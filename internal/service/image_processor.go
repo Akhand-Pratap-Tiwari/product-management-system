@@ -3,6 +3,8 @@ package service
 import (
 	"product-management-system/internal/models"
 	"product-management-system/pkg/logger"
+
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 type ImageProcessor struct {
@@ -34,4 +36,27 @@ func (ip *ImageProcessor) compressAndUploadImage(imageURL string) (string, error
 	// Implement image download, compression, and S3 upload
 	// Return S3 URL of compressed image
 	return "", nil
+}
+
+func NewImageProcessor(s3Client *s3.S3, s3Bucket string, appLogger *logger.Logger) *ImageProcessor {
+
+	return &ImageProcessor{
+
+		s3Client: s3Client,
+
+		bucket: s3Bucket,
+
+		logger: appLogger,
+	}
+
+}
+
+func (ip *ImageProcessor) ProcessImage(imagePath string) error {
+
+	// Dummy implementation for image processing
+
+	ip.logger.Info("Processing image", "path", imagePath)
+
+	return nil
+
 }

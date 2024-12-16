@@ -2,17 +2,23 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"log"
-	"time"
+
+	// "log"
+	// "time"
 
 	"product-management-system/internal/config"
 	"product-management-system/internal/models"
 	"product-management-system/internal/repository"
 	"product-management-system/internal/service"
 	"product-management-system/pkg/logger"
-	"product-management-system/pkg/utils"
 
+	// "product-management-system/pkg/utils"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/streadway/amqp"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,10 +33,10 @@ func main() {
 
 	// Database connection
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		cfg.Database.Host, cfg.Database.Port, 
-		cfg.Database.User, cfg.Database.Password, 
+		cfg.Database.Host, cfg.Database.Port,
+		cfg.Database.User, cfg.Database.Password,
 		cfg.Database.DBName)
-	
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		appLogger.Fatal("Failed to connect to database", "error", err)
@@ -39,13 +45,21 @@ func main() {
 	// Initialize repositories
 	productRepo := repository.NewProductRepository(db)
 
-	// Initialize S3 client
-	s3Client := // Initialize AWS S3 client
+	// Initialize AWS Session
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(cfg.AWS.Region),
+	})
+	if err != nil {
+		appLogger.Fatal("Failed to initialize AWS session", "error", err)
+	}
+
+	// Initialize S3 Client
+	s3Client := s3.New(sess)
 
 	// Initialize image processor
 	imageProcessor := service.NewImageProcessor(
-		s3Client, 
-		cfg.AWS.S3Bucket, 
+		s3Client,
+		cfg.AWS.S3Bucket,
 		appLogger,
 	)
 
@@ -111,8 +125,8 @@ func main() {
 
 			// Update product with processed images
 			if err := productRepo.UpdateProductImages(
-				context.Background(), 
-				task.ProductID, 
+				context.Background(),
+				task.ProductID,
 				task.CompressedImageURLs,
 			); err != nil {
 				appLogger.Error("Failed to update product images", "error", err)

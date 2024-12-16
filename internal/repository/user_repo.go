@@ -5,6 +5,7 @@ import (
 	"errors"
 	"product-management-system/internal/models"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 

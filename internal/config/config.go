@@ -32,6 +32,12 @@ type Config struct {
 	}
 }
 
+// Define awsS3Client struct
+type awsS3Client struct {
+	Region string
+	Bucket string
+}
+
 func LoadConfig() *Config {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

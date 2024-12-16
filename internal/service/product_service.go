@@ -4,21 +4,24 @@ import (
 	"context"
 	"errors"
 	"product-management-system/internal/models"
+	"product-management-system/internal/queue"
 	"product-management-system/internal/repository"
 	"product-management-system/pkg/logger"
+
+	"gorm.io/gorm"
 )
 
 type ProductService struct {
 	productRepo    *repository.ProductRepository
 	imageProcessor *ImageProcessor
-	messageQueue   *MessageQueue
+	messageQueue   *queue.RabbitMQQueue
 	logger         *logger.Logger
 }
 
 func NewProductService(
 	productRepo *repository.ProductRepository,
 	imageProcessor *ImageProcessor,
-	messageQueue *MessageQueue,
+	messageQueue *queue.RabbitMQQueue,
 	logger *logger.Logger,
 ) *ProductService {
 	return &ProductService{
@@ -54,4 +57,25 @@ func (s *ProductService) CreateProduct(ctx context.Context, product *models.Prod
 	}
 
 	return nil
+}
+
+func (s *ProductService) FindProductByID(ctx context.Context, id uint) (*models.Product, error) {
+	product, err := s.productRepo.FindByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("product not found")
+		}
+		s.logger.Error("Failed to find product", "error", err)
+		return nil, err
+	}
+	return product, nil
+}
+
+func (s *ProductService) ListProductsByUser(ctx context.Context, userID uint, filters map[string]interface{}) ([]models.Product, error) {
+	products, err := s.productRepo.FindByUserID(ctx, userID, filters)
+	if err != nil {
+		s.logger.Error("Failed to list products by user", "error", err)
+		return nil, err
+	}
+	return products, nil
 }

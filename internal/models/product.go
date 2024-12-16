@@ -18,9 +18,10 @@ type Product struct {
 }
 
 type ImageProcessingTask struct {
-	ProductID    uint
-	ImageURLs    []string
-	ProcessedAt  time.Time
-	Status       string
-	ErrorMessage string
+	ProductID           uint
+	ImageURLs           []string
+	ProcessedAt         time.Time
+	Status              string
+	ErrorMessage        string
+	CompressedImageURLs []string
 }
